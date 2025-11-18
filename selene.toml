@@ -1,0 +1,3 @@
+std = "roblox+testez"
+roblox-std-source = "pinned"
+selene: allow(manual_table_clone): true

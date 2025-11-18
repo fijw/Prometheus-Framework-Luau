@@ -1,0 +1,12 @@
+{
+    "editor.formatOnPaste": true,
+    "luau-lsp.completion.imports.enabled": true,
+    "workbench.iconTheme": "vs-seti",
+    "editor.acceptSuggestionOnEnter": "off",
+    "codeium.enableConfig": {
+        "*": true,
+        "luau": true
+    },
+    "editor.inlineSuggest.showToolbar": "always",
+    "better-comments.highlightPlainText": true
+}

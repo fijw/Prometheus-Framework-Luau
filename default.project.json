@@ -1,0 +1,34 @@
+{
+  "name": "Template",
+  "tree": {
+    "$className": "DataModel",
+    
+    "ReplicatedStorage": {
+      "$ignoreUnknownInstances": true,
+      "$className": "ReplicatedStorage",
+      "$path": "src/Shared"
+    },
+
+    "ServerScriptService": {
+      "$ignoreUnknownInstances": true,
+      "$className": "ServerScriptService",
+      "$path": "src/Server"
+    },
+
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$ignoreUnknownInstances": true,
+        "$className": "StarterPlayerScripts",
+        "$path": "src/Client"
+      }
+    },
+
+    "ReplicatedFirst": {
+      "$ignoreUnknownInstances": true,
+      "$className": "ReplicatedFirst",
+      "$path": "src/First"
+    }
+  }
+}

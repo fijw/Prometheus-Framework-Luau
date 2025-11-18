@@ -1,0 +1,12 @@
+{
+  "configVersion": "0.7",
+  "type": "roblox",
+  "lint": {
+    "unknownGlobal": "none",
+    "unknownType": "none",
+    "typeMismatch": "none"
+  },
+  "ignore": [
+    "RbxUtils/**"
+  ]
+}
