@@ -206,7 +206,7 @@ function Inheritance:hoverAndToggleSizing(sizeIncrease: number)
 
         local defaultInstanceSize = inst.Size
 
-        local newX, newY = defaultInstanceSize.X.Scale * sizeIncrease, defaultInstanceSize.Y.Scale * sizeIncrease
+        local newX, newY = (defaultInstanceSize.X.Scale * sizeIncrease) - 0.25, (defaultInstanceSize.Y.Scale * sizeIncrease) - 0.25
         local upscaledInstanceSize = UDim2.new(newX, 0, newY, 0)
 
         local UpsizeConnection = inst.MouseEnter:Connect(function() upscaleInstance(inst, upscaledInstanceSize) end)
