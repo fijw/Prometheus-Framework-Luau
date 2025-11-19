@@ -32,10 +32,11 @@ export type HandledUIInheritanceSchema
     handleGuiObjectInput
     : (
         self: HandledUI,
-        button: GuiObject,
         action: RBXScriptSignal,
         callback: (pos1: number, pos2: number) -> ()
     ) -> (),
+
+    makeGuiObjectDraggable: (self: HandledUI, guiObjectToDrag: GuiObject, mainGuiObject: GuiObject?) -> (),
 
     wipeConnections: (self: HandledUI) -> ()
 }

@@ -54,6 +54,7 @@ local ChatComponent = ClientComponents.ChatComponent
 local UIConnectionsComponent = ClientComponents.UIConnectionsComponent
 local FlyComponent = ClientComponents.FlyComponent
 local PermissionsDisplayComponent = ClientComponents.PermissionsDisplayComponent
+local CommandsDisplayComponent = ClientComponents.CommandsDisplayComponent
 --[[ @section Imports ]]
 
 
@@ -62,7 +63,8 @@ local ClientModules: { ModuleScript }
     ChatComponent,
     UIConnectionsComponent,
     FlyComponent,
-    PermissionsDisplayComponent
+    PermissionsDisplayComponent,
+    CommandsDisplayComponent
 }
 
 

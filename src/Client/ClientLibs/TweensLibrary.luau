@@ -62,8 +62,24 @@
 local TweenService = game:GetService("TweenService")
 
 
+--[[ @section Types ]]
+type Inheritance = { waitForCompletion: (self: HandledTween) -> () }
+
+export type HandledTween = setmetatable
+<
+    { storedTween: Tween },
+
+    {
+        __index: Inheritance,
+        __call: (self: HandledTween) -> (Tween)
+    }
+>
+--[[ @end_section Types ]]
+
+
 --[[ @section Variables ]]
 local Constructor = {}
+local Inheritance = {} :: Inheritance
 
 local TweensLibrary = {}
 --[[ @end_section Variables ]]
@@ -108,17 +124,36 @@ function Constructor:__call
 
 
     GoalTable: { [string]: any }
-): Tween
+): HandledTween
     local TweenInfo = TweenInfo.new(time, easingStyle, easingDirection, repeatCount, isReversed, repeatDelay)
     local Tween = TweenService:Create(instance, TweenInfo, GoalTable)
 
     Tween:Play()
 
-    return Tween
+    local HandledTween
+    = setmetatable(
+        { storedTween = Tween },
+        { __index = Inheritance }
+    ) :: HandledTween
+
+    return HandledTween
 end
 
 setmetatable(TweensLibrary, { __call = Constructor.__call })
 --[[ @end_section Constructor ]]
+
+
+--[[
+    @usage Wait for the tween to complete.
+
+    @param self HandledTween
+
+    @return
+]]
+function Inheritance:waitForCompletion()
+    if self.storedTween.PlaybackState ~= Enum.PlaybackState.Playing then return end
+    self.storedTween.Completed:Wait()
+end
 
 
 table.freeze(TweensLibrary)

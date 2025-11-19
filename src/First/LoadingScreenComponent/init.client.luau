@@ -53,14 +53,22 @@ local UIUtilitiesLibrary = require(StarterPlayerScripts.ClientLibs.UIUtilitiesLi
 --[[ @end_section Imports ]]
 
 
+type HandledTween = TweensLibrary.HandledTween
+
+
 --[[ @section Variables ]]
 local localPlayer = Players.LocalPlayer :: Player
 local playerGui = localPlayer:WaitForChild("PlayerGui")
 
 
 local spinTime = 2.5
-local disappearingTime = 1
+local tweensTime = 1
 local timeBeforeSkipAppears = 7.5
+
+local progressSizeMultiplier = 1.25
+
+
+local shouldSpin = true
 
 
 local ExperienceDescendants = game:GetDescendants()
@@ -77,19 +85,19 @@ local LoadingGuiComponents = require(script.LoadingGuiComponents)
 --[[
     @usage Spins the inputted instance in a circle.
 
-    @param inst Instance
+    @param inst GuiObject
     @param spinDirection number
     @param isLast true?
 
-    @return Tween
+    @return HandledTween
 ]]
-local function spinInst(inst: Instance, spinDirection: number, isLast: true?): Tween
+local function spinInst(inst: GuiObject, spinDirection: number, isLast: true?): HandledTween
     local spinningTween
     = TweensLibrary(
         inst,
 
 
-        if isLast then disappearingTime else spinTime,
+        if isLast then tweensTime else spinTime,
 
         Enum.EasingStyle.Sine,
         Enum.EasingDirection.Out,
@@ -108,17 +116,17 @@ end
 --[[
     @usage Hides the inputted instance via tween.
 
-    @param inst Instance | ImageLabel
+    @param inst GuiObject
 
-    @return Tween
+    @return HandledTween
 ]]
-local function hideInst(inst: Instance | ImageLabel): Tween
+local function hideInst(inst: GuiObject): HandledTween
     local disappearingTween
     = TweensLibrary(
         inst,
 
 
-        disappearingTime,
+        tweensTime,
 
         Enum.EasingStyle.Sine,
         Enum.EasingDirection.Out,
@@ -143,6 +151,81 @@ local function hideInst(inst: Instance | ImageLabel): Tween
 
     return disappearingTween
 end
+
+--[[
+    @usage Scales up the inputted instance via tween.
+
+    @param inst GuiObject
+
+    @return HandledTween
+]]
+local function scaleInst(inst: GuiObject, wayToScale: "up" | "down"): HandledTween
+    local newX: number, newY: number
+
+    -- Scale up or down depending on wayToScale.
+    if wayToScale == "up" then
+        newX, newY = inst.Size.X.Scale * progressSizeMultiplier, inst.Size.Y.Scale * progressSizeMultiplier
+    elseif wayToScale == "down" then
+        newX, newY = inst.Size.X.Scale / progressSizeMultiplier, inst.Size.Y.Scale / progressSizeMultiplier
+    end
+
+    local newSize = UDim2.new(newX, 0, newY, 0)
+
+    local scalingTween
+    = TweensLibrary(
+        inst,
+
+
+        tweensTime,
+
+        Enum.EasingStyle.Sine,
+        Enum.EasingDirection.Out,
+
+        0,
+        false,
+        0,
+
+
+        { Size = newSize }
+    )
+
+    return scalingTween
+end
+
+--[[
+    @usage Changes the color of the inputted instance via tween.
+
+    @param inst GuiObject
+    @param newColor Color3
+
+    @return HandledTween
+]]
+local function colorInst(inst: GuiObject, ColorArgs: { number }): HandledTween
+    assert(#ColorArgs == 3, "Number of inputted Color Arguments must be 3.")
+    
+    local r, g, b = table.unpack(ColorArgs)
+    local newColor = Color3.fromRGB(r, g, b)
+
+    local coloringTween
+    = TweensLibrary(
+        inst,
+
+
+        tweensTime,
+
+        Enum.EasingStyle.Sine,
+        Enum.EasingDirection.Out,
+
+        0,
+        false,
+        0,
+
+
+        { BackgroundColor3 = newColor }
+    )
+
+    return coloringTween
+end
 --[[ @end_section Tween Functions ]]
 
 
@@ -151,11 +234,12 @@ end
     preload the experience before removing the custom loading screen.
 ]]
 do
-    LoadingGuiComponents.loadingGui.Parent = playerGui
+    LoadingGuiComponents.UiComponents.loadingGui.Parent = playerGui
 
-    local loadingGuiClone = LoadingGuiComponents.loadingGui:Clone()
+    local loadingGuiClone = LoadingGuiComponents.UiComponents.loadingGui:Clone()
 
-    local HandledUI = UIUtilitiesLibrary(LoadingGuiComponents.loadingGui)
+    local HandledUi = UIUtilitiesLibrary(LoadingGuiComponents.UiComponents.loadingGui)
+    HandledUi:hoverAndToggleSizing(1.15)
 
     -- Set loading screen replacements & hide the core gui.
     do
@@ -165,7 +249,9 @@ do
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
     end
 
-    local fullSpin: Tween
+    LoadingGuiComponents.UiComponents.progressBar.Visible = true
+
+    local fullSpin: HandledTween?
     local spinDirection = 0
 
     -- Spin the logo while waiting via tweens.
@@ -174,34 +260,35 @@ do
             repeat
                 if spinDirection == 0 then spinDirection = 360 else spinDirection = 0 end
 
-                fullSpin = spinInst(LoadingGuiComponents.logo, spinDirection)
-                if fullSpin.PlaybackState == Enum.PlaybackState.Playing then fullSpin.Completed:Wait() end
-            until numOfLoadedDescendants == numOfExperienceDescendants
+                fullSpin = spinInst(LoadingGuiComponents.UiComponents.logo, spinDirection);
+                (fullSpin :: HandledTween):waitForCompletion()
+            until not shouldSpin
         end
     )
 
-    local disappearingSkipBtn: Tween
+    colorInst(LoadingGuiComponents.UiComponents.initialized, LoadingGuiComponents.Settings.progressBarSelectedColor)
+    scaleInst(LoadingGuiComponents.UiComponents.initialized, "up"):waitForCompletion()
 
-    -- Allow the player to skip the loading screen.
+    local disappearingSkipBtn: HandledTween?
+
+    -- Allow the player to skip the loading screen after waiting.
     task.spawn(
         function()
             task.wait(timeBeforeSkipAppears)
 
-            if not LoadingGuiComponents.loadingGui or numOfLoadedDescendants == numOfExperienceDescendants then return end
+            if not LoadingGuiComponents.UiComponents.loadingGui or numOfLoadedDescendants == numOfExperienceDescendants then return end
 
-            LoadingGuiComponents.skipBtn.Visible = true
+            LoadingGuiComponents.UiComponents.skipBtn.Visible = true
 
             local alreadySkipped = false
 
-            HandledUI:hoverAndToggleSizing(1.15)
-
-            HandledUI:handleButtonPress(LoadingGuiComponents.skipBtn,
+            HandledUi:handleButtonPress(LoadingGuiComponents.UiComponents.skipBtn,
                 function(pos1: number, pos2: number)
                     if alreadySkipped then return end
 
                     numOfLoadedDescendants = numOfExperienceDescendants
 
-                    disappearingSkipBtn = hideInst(LoadingGuiComponents.skipBtn)
+                    disappearingSkipBtn = hideInst(LoadingGuiComponents.UiComponents.skipBtn)
 
                     alreadySkipped = true
                 end
@@ -221,6 +308,15 @@ do
 
     numOfExperienceDescendants = #ExperienceDescendants
 
+    -- Animate the progress bar to show that it's loading assets.
+    do
+        colorInst(LoadingGuiComponents.UiComponents.initialized, LoadingGuiComponents.Settings.progressBarUnselectedColor)
+        scaleInst(LoadingGuiComponents.UiComponents.initialized, "down")
+
+        scaleInst(LoadingGuiComponents.UiComponents.loading, "up")
+        colorInst(LoadingGuiComponents.UiComponents.loading, LoadingGuiComponents.Settings.progressBarSelectedColor):waitForCompletion()
+    end
+
     -- Preload each important experience descendant.
     for i = 1, numOfExperienceDescendants do
         if numOfLoadedDescendants == numOfExperienceDescendants then break end
@@ -228,16 +324,24 @@ do
         local descendant = ExperienceDescendants[i]
         ContentProvider:PreloadAsync({ descendant })
 
-        LoadingGuiComponents.progressTxt.Text = `Loading asset "{descendant.Name}".\n{i} out of {numOfExperienceDescendants}`
-
         numOfLoadedDescendants += 1
 
         task.wait()
     end
-    
-    if fullSpin.PlaybackState == Enum.PlaybackState.Playing then fullSpin.Completed:Wait() end
 
-    HandledUI:wipeConnections()
+    HandledUi:wipeConnections()
+
+    -- Animate the progress bar to show finishing loading.
+    do
+        colorInst(LoadingGuiComponents.UiComponents.loading, LoadingGuiComponents.Settings.progressBarUnselectedColor)
+        scaleInst(LoadingGuiComponents.UiComponents.loading, "down")
+
+        colorInst(LoadingGuiComponents.UiComponents.finished, LoadingGuiComponents.Settings.progressBarSelectedColor)
+        scaleInst(LoadingGuiComponents.UiComponents.finished, "up"):waitForCompletion()
+    end
+
+    shouldSpin = false
+    if fullSpin then fullSpin:waitForCompletion() end
 
     --[[
         Hide the background, logo, and spin the logo via tweens.
@@ -246,21 +350,29 @@ do
     do
         if spinDirection == 0 then spinDirection = 360 else spinDirection = 0 end
 
-        local disappearingProgressTxt = hideInst(LoadingGuiComponents.progressTxt)
-        local disappearingBg = hideInst(LoadingGuiComponents.background)
-        local disappearingLogo = hideInst(LoadingGuiComponents.logo)
+        local disappearingInitialized = hideInst(LoadingGuiComponents.UiComponents.initialized)
+        local disappearingLoading = hideInst(LoadingGuiComponents.UiComponents.loading)
+        local disappearingFinished = hideInst(LoadingGuiComponents.UiComponents.finished)
 
-        fullSpin = spinInst(LoadingGuiComponents.logo, spinDirection, true)
+        local disappearingBg = hideInst(LoadingGuiComponents.UiComponents.background)
+        local disappearingLogo = hideInst(LoadingGuiComponents.UiComponents.logo)
 
-        if disappearingProgressTxt.PlaybackState == Enum.PlaybackState.Playing then disappearingProgressTxt.Completed:Wait() end
-        if disappearingSkipBtn then if disappearingSkipBtn.PlaybackState == Enum.PlaybackState.Playing then disappearingSkipBtn.Completed:Wait() end end
-        if disappearingBg.PlaybackState == Enum.PlaybackState.Playing then disappearingBg.Completed:Wait() end
-        if disappearingLogo.PlaybackState == Enum.PlaybackState.Playing then disappearingLogo.Completed:Wait() end
+        fullSpin = spinInst(LoadingGuiComponents.UiComponents.logo, spinDirection, true)
 
-        if fullSpin.PlaybackState == Enum.PlaybackState.Playing then fullSpin.Completed:Wait() end
+        if disappearingSkipBtn then disappearingSkipBtn:waitForCompletion() 
+        else hideInst(LoadingGuiComponents.UiComponents.skipBtn):waitForCompletion() end
+
+        disappearingInitialized:waitForCompletion()
+        disappearingLoading:waitForCompletion()
+        disappearingFinished:waitForCompletion()
+
+        disappearingBg:waitForCompletion()
+        disappearingLogo:waitForCompletion()
+
+        fullSpin:waitForCompletion()
     end
 
-    LoadingGuiComponents.loadingGui:Destroy()
+    LoadingGuiComponents.UiComponents.loadingGui:Destroy()
 
     StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 end

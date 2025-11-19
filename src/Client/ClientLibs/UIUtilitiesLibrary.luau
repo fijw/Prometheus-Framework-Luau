@@ -33,23 +33,23 @@
 
         -- Setting up the UI Utilities.
         do
-            local HandledUI = UIUtilitiesLibrary(TestUi)
+            local HandledUi = UIUtilitiesLibrary(TestUi)
 
-            HandledUI:hoverAndToggleSizing(1.15) -- 1.15? idk.
+            HandledUi:hoverAndToggleSizing(1.15) -- 1.15? idk.
 
-            HandledUI:handleButtonPress(testButton,
+            HandledUi:handleButtonPress(testButton,
                 function()
                     print("pressed")
                 end
             )
 
-            HandledUI:handleGuiObjectInput(testButton, testButton.MouseEnter,
+            HandledUi:handleGuiObjectInput(testButton.MouseEnter,
                 function()
                     print("hovered")
                 end
             )
 
-            print(HandledUI)
+            print(HandledUi)
         end
     ```
 ]]
@@ -58,7 +58,9 @@
 
 
 --[[ @section Imports ]]
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 local StarterPlayer = game:GetService("StarterPlayer")
 local StarterPlayerScripts = StarterPlayer.StarterPlayerScripts
 
@@ -141,6 +143,23 @@ end
 --[[ @end_section Utility Functions ]]
 
 
+local function onInputBegan(
+    input: InputObject,
+    gameProcessed: boolean,
+
+    isHovering: boolean,
+    guiObject: GuiObject
+)
+    if gameProcessed or not isHovering then return end
+    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+
+    if guiObject.AnchorPoint ~= Vector2.new(0, 0) then guiObject.AnchorPoint = Vector2.new(0, 0) end
+
+    local playerMouse = Players.LocalPlayer:GetMouse()
+    guiObject.Position = UDim2.new(0, playerMouse.X, 0, playerMouse.Y)
+end
+
+
 --[[ @section Constructor ]]
 --[[
     @usage Handles the addition of a new handled UI.
@@ -174,6 +193,7 @@ setmetatable(UIUtilities, { __call = Constructor.__call })
 --[[
     @usage Sizes buttons on hovers and clicks.
 
+    @param self HandledUI
     @param sizeIncrease number
 
     @return
@@ -208,7 +228,7 @@ end
 --[[
     @usage Handles GuiObject inputs.
 
-    @param button GuiObject
+    @param self HandledUI
     @param action RBXScriptConnection
     @param callback (pos1: number, pos2: number) -> ()
 
@@ -216,7 +236,6 @@ end
 ]]
 function Inheritance:handleGuiObjectInput
 (
-    button: GuiObject,
     action: RBXScriptSignal,
     callback: (pos1: number, pos2: number) -> ()
 )
@@ -227,6 +246,7 @@ end
 --[[
     @usage Handles button presses.
 
+    @param self HandledUI
     @param button GuiButton
     @param callback (pos1: number, pos2: number) -> ()
 
@@ -236,12 +256,36 @@ function Inheritance:handleButtonPress(button: GuiButton, callback: (pos1: numbe
     local PressConnection = button.MouseButton1Up:Connect(callback)
     table.insert(self.PressConnections, PressConnection)
 end
+
+--[[
+    @usage Makes a GuiObject draggable.
+
+    @param self HandledUI
+    @param guiObject GuiObject
+
+    @return
+]]
+function Inheritance:makeGuiObjectDraggable(guiObjectToDrag: GuiObject, mainGuiObject: GuiObject?)
+    local isHovering = false
+
+    UserInputService.InputBegan
+    :Connect(
+        function(input: InputObject, gameProcessed: boolean)
+            onInputBegan(input, gameProcessed, isHovering, mainGuiObject or guiObjectToDrag)
+        end
+    )
+
+    self:handleGuiObjectInput(guiObjectToDrag.MouseEnter, function() isHovering = true end)
+    self:handleGuiObjectInput(guiObjectToDrag.MouseLeave, function() isHovering = false end)
+end
 --[[ @section Connection Inheritance ]]
 
 
 --[[
     @usage Destroys all connections.
     
+    @param self HandledUI
+
     @return
 ]]
 function Inheritance:wipeConnections()
