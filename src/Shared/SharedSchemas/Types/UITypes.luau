@@ -9,7 +9,19 @@ export type HandledUISchema
 
     SizingConnections: { [any]: RBXScriptConnection },
     PressConnections: { RBXScriptConnection },
-    OtherConnections: { RBXScriptConnection }
+    OtherConnections: { RBXScriptConnection },
+
+    DraggableObjects
+    : {
+        [string]
+        : {
+            draggingObject: GuiObject,
+            mainObject: GuiObject?,
+
+            isHovering: boolean,
+            isHolding: boolean
+        }
+    }
 }
 
 export type HandledUI = setmetatable
@@ -33,7 +45,7 @@ export type HandledUIInheritanceSchema
     : (
         self: HandledUI,
         action: RBXScriptSignal,
-        callback: (pos1: number, pos2: number) -> ()
+        callback: () -> ()
     ) -> (),
 
     makeGuiObjectDraggable: (self: HandledUI, guiObjectToDrag: GuiObject, mainGuiObject: GuiObject?) -> (),

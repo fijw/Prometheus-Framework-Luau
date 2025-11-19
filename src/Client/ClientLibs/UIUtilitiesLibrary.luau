@@ -29,16 +29,17 @@
     @Example
     ```luau
         local TestUi = PLAYER_GUI:WaitForChild("TestUI") :: ScreenGui
-        local testButton = TestUi:WaitForChild("TestButton") :: TextButton
+        local testFrame = TestUi:WaitForChild("TestFrame") :: Frame
+        local testButton = testFrame:WaitForChild("TestButton") :: TextButton
+        local testDraggableTitleBar = testFrame:WaitForChild("TitleBar") :: TextLabel
 
         -- Setting up the UI Utilities.
         do
             local HandledUi = UIUtilitiesLibrary(TestUi)
-
             HandledUi:hoverAndToggleSizing(1.15) -- 1.15? idk.
 
             HandledUi:handleButtonPress(testButton,
-                function()
+                function(pos1: number, pos2: number)
                     print("pressed")
                 end
             )
@@ -48,6 +49,8 @@
                     print("hovered")
                 end
             )
+
+            HandledUi:makeGuiObjectDraggable(testDraggableTitleBar, testFrame)
 
             print(HandledUi)
         end
@@ -143,21 +146,75 @@ end
 --[[ @end_section Utility Functions ]]
 
 
-local function onInputBegan(
+--[[ @end_section UserInputService Functions ]]
+--[[
+    @usage Handles input began for draggable gui objects.
+
+    @param input InputObject
+    @param gameProcessed boolean
+
+    @param guiObject GuiObject
+
+    @param HandledUICalledFrom HandledUI
+
+    @return
+]]
+local function onInputBegan
+(
     input: InputObject,
     gameProcessed: boolean,
 
-    isHovering: boolean,
-    guiObject: GuiObject
+    draggingObject: GuiObject,
+    mainObject: GuiObject?,
+
+    HandledUICalledFrom: HandledUI
 )
-    if gameProcessed or not isHovering then return end
+    local DraggableData = HandledUICalledFrom.DraggableObjects[draggingObject.Name]
+
+    if gameProcessed or not DraggableData.isHovering then return end
     if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
 
-    if guiObject.AnchorPoint ~= Vector2.new(0, 0) then guiObject.AnchorPoint = Vector2.new(0, 0) end
+    DraggableData.isHolding = true
 
     local playerMouse = Players.LocalPlayer:GetMouse()
-    guiObject.Position = UDim2.new(0, playerMouse.X, 0, playerMouse.Y)
+
+    local movingObject = mainObject or draggingObject
+    if movingObject.AnchorPoint ~= Vector2.new(0, 0) then movingObject.AnchorPoint = Vector2.new(0, 0) end
+
+    while DraggableData.isHovering and DraggableData.isHolding do
+        local xDifference, yDifference = draggingObject.AbsoluteSize.X / 2, draggingObject.AbsoluteSize.Y / 2
+        local newXOffset, newYOffset = playerMouse.X - xDifference, playerMouse.Y - yDifference
+        movingObject.Position = UDim2.new(0, newXOffset, 0, newYOffset)
+        
+        task.wait()
+    end
 end
+
+--[[
+    @usage Handles input ended for draggable gui objects.
+
+    @param input InputObject
+    @param gameProcessed boolean
+
+    @param HandledUICalledFrom HandledUI
+
+    @return
+]]
+local function onInputEnded
+(
+    input: InputObject,
+    gameProcessed: boolean,
+
+    draggingObjectName: string,
+
+    HandledUICalledFrom: HandledUI
+)
+    if gameProcessed or not HandledUICalledFrom.DraggableObjects[draggingObjectName].isHovering then return end
+    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+
+    HandledUICalledFrom.DraggableObjects[draggingObjectName].isHolding = false
+end
+--[[ @end_section UserInputService Functions ]]
 
 
 --[[ @section Constructor ]]
@@ -176,6 +233,8 @@ function Constructor:__call(ui: ScreenGui): HandledUI
         SizingConnections = {},
         PressConnections = {},
         OtherConnections = {},
+
+        DraggableObjects = {}
     }
 
     setmetatable(NewHandledUI, { __index = Inheritance })
@@ -206,7 +265,7 @@ function Inheritance:hoverAndToggleSizing(sizeIncrease: number)
 
         local defaultInstanceSize = inst.Size
 
-        local newX, newY = (defaultInstanceSize.X.Scale * sizeIncrease) - 0.25, (defaultInstanceSize.Y.Scale * sizeIncrease) - 0.25
+        local newX, newY = defaultInstanceSize.X.Scale * sizeIncrease, defaultInstanceSize.Y.Scale * sizeIncrease
         local upscaledInstanceSize = UDim2.new(newX, 0, newY, 0)
 
         local UpsizeConnection = inst.MouseEnter:Connect(function() upscaleInstance(inst, upscaledInstanceSize) end)
@@ -266,17 +325,39 @@ end
     @return
 ]]
 function Inheritance:makeGuiObjectDraggable(guiObjectToDrag: GuiObject, mainGuiObject: GuiObject?)
-    local isHovering = false
+    local draggingObjectName = guiObjectToDrag.Name
 
-    UserInputService.InputBegan
-    :Connect(
-        function(input: InputObject, gameProcessed: boolean)
-            onInputBegan(input, gameProcessed, isHovering, mainGuiObject or guiObjectToDrag)
-        end
-    )
+    self.DraggableObjects[draggingObjectName]
+    = {
+        draggingObject = guiObjectToDrag,
+        mainObject = mainGuiObject,
 
-    self:handleGuiObjectInput(guiObjectToDrag.MouseEnter, function() isHovering = true end)
-    self:handleGuiObjectInput(guiObjectToDrag.MouseLeave, function() isHovering = false end)
+        isHovering = false,
+        isHolding = false
+    }
+
+    -- Handle and store connections.
+    do
+        local InputBeganConnection = UserInputService.InputBegan
+        :Connect(
+            function(input: InputObject, gameProcessed: boolean)
+                onInputBegan(input, gameProcessed, guiObjectToDrag, mainGuiObject, self)
+            end
+        )
+
+        local InputEndedConnection = UserInputService.InputEnded
+        :Connect(
+            function(input: InputObject, gameProcessed: boolean)
+                onInputEnded(input, gameProcessed, guiObjectToDrag.Name, self)
+            end
+        )
+
+        table.insert(self.OtherConnections, InputBeganConnection)
+        table.insert(self.OtherConnections, InputEndedConnection)
+    end
+
+    self:handleGuiObjectInput(guiObjectToDrag.MouseEnter, function() self.DraggableObjects[draggingObjectName].isHovering = true end)
+    self:handleGuiObjectInput(guiObjectToDrag.MouseLeave, function() self.DraggableObjects[draggingObjectName].isHovering = false end)
 end
 --[[ @section Connection Inheritance ]]
 
