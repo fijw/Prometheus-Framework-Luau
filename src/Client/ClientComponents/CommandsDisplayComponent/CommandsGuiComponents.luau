@@ -51,6 +51,7 @@ local CommandsGuiComponents
 -- Create the commands gui and its components.
 do
     commandsGui.Name = "CommandsGui"
+    commandsGui.IgnoreGuiInset = true
 
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = commandsGui
@@ -70,8 +71,8 @@ do
     title.BackgroundTransparency = 1.000
     title.BorderColor3 = Color3.fromRGB(0, 0, 0)
     title.BorderSizePixel = 0
-    title.Position = UDim2.new(0.0325423107, 0, -6.48780656e-08, 0)
-    title.Size = UDim2.new(0.770487607, 0, 0.128863111, 0)
+    title.Position = UDim2.new(0.192, 0, -0, 0)
+    title.Size = UDim2.new(0.611, 0, 0.129, 0)
     title.Font = Enum.Font.SourceSansBold
     title.Text = "Commands List"
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -205,7 +206,7 @@ do
     showBtn.BackgroundColor3 = Color3.fromRGB(0, 157, 255)
     showBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
     showBtn.BorderSizePixel = 0
-    showBtn.Position = UDim2.new(0.499548852, 0, 0.0178658776, 0)
+    showBtn.Position = UDim2.new(0.5, 0, 0.028, 0)
     showBtn.Size = UDim2.new(0.021163078, 0, 0.0361503474, 0)
     showBtn.Font = Enum.Font.SourceSansBold
     showBtn.Text = ">"
