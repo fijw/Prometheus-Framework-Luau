@@ -79,6 +79,8 @@ function Constructor:__call()
             local clonedTemplateCommand = clonedCommandsScroller:WaitForChild("TemplateCommand") :: TextLabel
             local clonedCloseBtn = clonedMainFrame:WaitForChild("CloseBtn") :: TextButton
             local clonedTitle = clonedMainFrame:WaitForChild("Title") :: TextLabel
+            local clonedHideBtn = clonedMainFrame:WaitForChild("HideBtn") :: TextButton
+            local clonedShowBtn = clonedCommandsGui:WaitForChild("ShowBtn") :: TextButton
             
             local HandledUi = UIUtilitiesLibrary(clonedCommandsGui)
             HandledUi:hoverAndToggleSizing(1.15)
@@ -93,12 +95,29 @@ function Constructor:__call()
 
             clonedTemplateCommand:Destroy()
 
-            HandledUi:handleButtonPress(clonedCloseBtn,
-                function(pos1: number, pos2: number)
-                    HandledUi:wipeConnections()
-                    clonedCommandsGui:Destroy()
-                end
-            )
+            -- Handle the buttons functionalities.
+            do
+                HandledUi:handleButtonPress(clonedCloseBtn,
+                    function(pos1: number, pos2: number)
+                        HandledUi:wipeConnections()
+                        clonedCommandsGui:Destroy()
+                    end
+                )
+
+                HandledUi:handleButtonPress(clonedHideBtn,
+                    function(pos1: number, pos2: number)
+                        clonedMainFrame.Visible = false
+                        clonedShowBtn.Visible = true
+                    end
+                )
+
+                HandledUi:handleButtonPress(clonedShowBtn,
+                    function(pos1: number, pos2: number)
+                        clonedMainFrame.Visible = true
+                        clonedShowBtn.Visible = false
+                    end
+                )
+            end
 
             HandledUi:makeGuiObjectDraggable(clonedTitle, clonedMainFrame)
         end

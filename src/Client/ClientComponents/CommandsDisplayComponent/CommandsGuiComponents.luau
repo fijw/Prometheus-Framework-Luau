@@ -206,7 +206,7 @@ do
     showBtn.BackgroundColor3 = Color3.fromRGB(0, 157, 255)
     showBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
     showBtn.BorderSizePixel = 0
-    showBtn.Position = UDim2.new(0.5, 0, 0.028, 0)
+    showBtn.Position = UDim2.new(0.983, 0, 0.028, 0)
     showBtn.Size = UDim2.new(0.021163078, 0, 0.0361503474, 0)
     showBtn.Font = Enum.Font.SourceSansBold
     showBtn.Text = ">"
@@ -214,6 +214,7 @@ do
     showBtn.TextScaled = true
     showBtn.TextSize = 14.000
     showBtn.TextWrapped = true
+    showBtn.Visible = false
 
     uiCorner_5.Parent = showBtn
 
