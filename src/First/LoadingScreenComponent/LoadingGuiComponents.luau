@@ -23,8 +23,11 @@ local LoadingGuiComponents
 = {
     Settings
     = {
-        progressBarUnselectedColor = { 255, 255, 255 },
-        progressBarSelectedColor = { 183, 0, 255 }
+        ProgressBarUnselectedColor = { 255, 255, 255 },
+
+        InitializedColorArray = { 255, 0, 0 },
+        LoadingColorArray = { 255, 251, 0 },
+        FinishedColorArray = { 0, 255, 0 }
     },
 
     UiComponents
@@ -68,7 +71,7 @@ end
 
 -- Create the loading gui and its components
 do
-    local unselectedProgressBarColor = colorFromRGBArray(LoadingGuiComponents.Settings.progressBarUnselectedColor)
+    local unselectedProgressBarColor = colorFromRGBArray(LoadingGuiComponents.Settings.ProgressBarUnselectedColor)
 
     loadingGui.Name = "LoadingGui"
     loadingGui.IgnoreGuiInset = true

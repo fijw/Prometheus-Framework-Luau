@@ -266,7 +266,7 @@ do
         end
     )
 
-    colorInst(LoadingGuiComponents.UiComponents.initialized, LoadingGuiComponents.Settings.progressBarSelectedColor)
+    colorInst(LoadingGuiComponents.UiComponents.initialized, LoadingGuiComponents.Settings.InitializedColorArray)
     scaleInst(LoadingGuiComponents.UiComponents.initialized, "up"):waitForCompletion()
 
     local disappearingSkipBtn: HandledTween?
@@ -310,11 +310,11 @@ do
 
     -- Animate the progress bar to show that it's loading assets.
     do
-        colorInst(LoadingGuiComponents.UiComponents.initialized, LoadingGuiComponents.Settings.progressBarUnselectedColor)
+        colorInst(LoadingGuiComponents.UiComponents.initialized, LoadingGuiComponents.Settings.ProgressBarUnselectedColor)
         scaleInst(LoadingGuiComponents.UiComponents.initialized, "down")
 
         scaleInst(LoadingGuiComponents.UiComponents.loading, "up")
-        colorInst(LoadingGuiComponents.UiComponents.loading, LoadingGuiComponents.Settings.progressBarSelectedColor):waitForCompletion()
+        colorInst(LoadingGuiComponents.UiComponents.loading, LoadingGuiComponents.Settings.LoadingColorArray):waitForCompletion()
     end
 
     -- Preload each important experience descendant.
@@ -333,10 +333,10 @@ do
 
     -- Animate the progress bar to show finishing loading.
     do
-        colorInst(LoadingGuiComponents.UiComponents.loading, LoadingGuiComponents.Settings.progressBarUnselectedColor)
+        colorInst(LoadingGuiComponents.UiComponents.loading, LoadingGuiComponents.Settings.ProgressBarUnselectedColor)
         scaleInst(LoadingGuiComponents.UiComponents.loading, "down")
 
-        colorInst(LoadingGuiComponents.UiComponents.finished, LoadingGuiComponents.Settings.progressBarSelectedColor)
+        colorInst(LoadingGuiComponents.UiComponents.finished, LoadingGuiComponents.Settings.FinishedColorArray)
         scaleInst(LoadingGuiComponents.UiComponents.finished, "up"):waitForCompletion()
     end
 
