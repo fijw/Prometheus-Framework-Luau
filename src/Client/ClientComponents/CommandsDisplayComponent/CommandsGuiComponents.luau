@@ -16,7 +16,12 @@ local uiCorner_3 = Instance.new("UICorner")
 local credits = Instance.new("TextLabel")
 local note1 = Instance.new("TextLabel")
 local note2 = Instance.new("TextLabel")
+local hideBtn = Instance.new("TextButton")
+local uiCorner_4 = Instance.new("UICorner")
+local uiCorner_5 = Instance.new("UICorner")
+local showBtn = Instance.new("TextButton")
 local uiAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
+local uiAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint")
 
 local CommandsGuiComponents
 = {
@@ -30,10 +35,15 @@ local CommandsGuiComponents
     uiCorner = uiCorner,
     uiCorner_2 = uiCorner_2,
     uiCorner_3 = uiCorner_3,
+    uiCorner_4 = uiCorner_4,
+    uiCorner_5 = uiCorner_5,
+    showBtn = showBtn,
     credits = credits,
     note1 = note1,
     note2 = note2,
-    uiAspectRatioConstraint = uiAspectRatioConstraint
+    hideBtn = hideBtn,
+    uiAspectRatioConstraint = uiAspectRatioConstraint,
+    uiAspectRatioConstraint_2 = uiAspectRatioConstraint_2
 }
 --[[ @end_section Variables ]]
 
@@ -98,6 +108,21 @@ do
     templateCommand.TextScaled = true
     templateCommand.TextSize = 14.000
     templateCommand.TextWrapped = true
+
+    hideBtn.Name = "HideBtn"
+    hideBtn.Parent = mainFrame
+    hideBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+    hideBtn.BackgroundColor3 = Color3.fromRGB(0, 157, 255)
+    hideBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    hideBtn.BorderSizePixel = 0
+    hideBtn.Position = UDim2.new(0.0913855657, 0, 0.0639876276, 0)
+    hideBtn.Size = UDim2.new(0.121503152, 0, 0.0829806104, 0)
+    hideBtn.Font = Enum.Font.SourceSansBold
+    hideBtn.Text = "<"
+    hideBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    hideBtn.TextScaled = true
+    hideBtn.TextSize = 14.000
+    hideBtn.TextWrapped = true
 
     uiListLayout.Name = "UIListLayout"
     uiListLayout.Parent = commandsScroller
@@ -171,6 +196,28 @@ do
     uiAspectRatioConstraint.Name = "UIAspectRatioConstraint"
     uiAspectRatioConstraint.Parent = mainFrame
     uiAspectRatioConstraint.AspectRatio = 0.703
+
+    uiCorner_4.Parent = hideBtn
+
+    showBtn.Name = "ShowBtn"
+    showBtn.Parent = commandsGui
+    showBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+    showBtn.BackgroundColor3 = Color3.fromRGB(0, 157, 255)
+    showBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    showBtn.BorderSizePixel = 0
+    showBtn.Position = UDim2.new(0.499548852, 0, 0.0178658776, 0)
+    showBtn.Size = UDim2.new(0.021163078, 0, 0.0361503474, 0)
+    showBtn.Font = Enum.Font.SourceSansBold
+    showBtn.Text = ">"
+    showBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    showBtn.TextScaled = true
+    showBtn.TextSize = 14.000
+    showBtn.TextWrapped = true
+
+    uiCorner_5.Parent = showBtn
+
+    uiAspectRatioConstraint_2.Parent = showBtn
+    uiAspectRatioConstraint_2.AspectRatio = 1.042
 end
 
 
