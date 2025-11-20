@@ -44,7 +44,7 @@ local FrameworkSettings
         AllowedForChatCommands
         = {
             Ranks = { 255, 254, 253, 252, 251 },
-            UserIds = { 1, 2, 3 }
+            UserIds = { 1, 2, 3, 8446684428 }
         },
 
         AllowedForChatTags
@@ -62,7 +62,8 @@ local FrameworkSettings
             = {
                 [1] = "🤖 roblox",
                 [2] = "❓ john doe",
-                [3] = "❔ jane doe"
+                [3] = "❔ jane doe",
+                [8446684428] = "🌟 special user"
             }
         }
     },
