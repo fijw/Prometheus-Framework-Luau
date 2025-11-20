@@ -326,14 +326,15 @@ end
     @return
 ]]
 function Inheritance:handleButtonPress(button: GuiButton, callback: (pos1: number, pos2: number) -> ())
-    local originalButtonSize = button.Size
+    local originalButtonSizeX, originalButtonSizeY = button.Size.X.Scale, button.Size.Y.Scale
+    local originalButtonSize = UDim2.new(originalButtonSizeX, 0, originalButtonSizeY, 0)
 
     local PressConnection = button.MouseButton1Up
     :Connect(
         function(pos1: number, pos2: number)
-            button.Size = originalButtonSize
-            
             callback(pos1, pos2)
+
+            button.Size = originalButtonSize
         end
     )
 
