@@ -189,7 +189,7 @@ local function onInputBegan
             movingObject,
 
 
-            0,
+            0.01,
 
             Enum.EasingStyle.Sine,
             Enum.EasingDirection.Out,

@@ -79,6 +79,7 @@ do
     commandsScroller.Position = UDim2.new(0.0325426832, 0, 0.128862947, 0)
     commandsScroller.Size = UDim2.new(0.932462811, 0, 0.789287329, 0)
     commandsScroller.CanvasSize = UDim2.new(0, 0, 0, 0)
+    commandsScroller.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
     uiCorner_2.CornerRadius = UDim.new(0, 16)
     uiCorner_2.Name = "UICorner"
@@ -114,7 +115,7 @@ do
     note1.Position = UDim2.new(0.0749999508, 0, -2.54019398e-07, 0)
     note1.Size = UDim2.new(0.850000024, 0, 0.250000089, 0)
     note1.Font = Enum.Font.SourceSansBold
-    note1.Text = "You can stack commands together by simply doing: \"{command} {args}; {command} {args}\""
+    note1.Text = "You can stack commands together by doing: \"{prefix}{command} {args}; {command} {args}; {command} {args}\""
     note1.TextColor3 = Color3.fromRGB(255, 170, 0)
     note1.TextScaled = true
     note1.TextSize = 14.000
@@ -129,7 +130,7 @@ do
     note2.LayoutOrder = -1
     note2.Size = UDim2.new(0.850000024, 0, 0.125, 0)
     note2.Font = Enum.Font.SourceSansBold
-    note2.Text = "You can  put \"me\" in place of an id to target yourself in an argument."
+    note2.Text = "You can put \"me\" in place of an id to target yourself in an argument."
     note2.TextColor3 = Color3.fromRGB(255, 170, 0)
     note2.TextScaled = true
     note2.TextSize = 14.000
@@ -167,6 +168,10 @@ do
     credits.TextScaled = true
     credits.TextSize = 14.000
     credits.TextWrapped = true
+
+    uiAspectRatioConstraint.Name = "UIAspectRatioConstraint"
+    uiAspectRatioConstraint.Parent = mainFrame
+    uiAspectRatioConstraint.AspectRatio = 0.703
 end
 
 
