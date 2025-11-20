@@ -43,6 +43,7 @@ local StarterPlayer = game:GetService("StarterPlayer")
 local StarterPlayerScripts = StarterPlayer.StarterPlayerScripts
 
 local CommandsGuiComponents = require(script.CommandsGuiComponents)
+local CommandsGuiOpenerComponents = require(script.CommandsGuiOpenerComponents)
 
 local ChatCommandsNamespace = require(ReplicatedStorage.Networking.Namespaces.Services.ChatCommands)
 
@@ -80,7 +81,6 @@ function Constructor:__call()
             local clonedCloseBtn = clonedMainFrame:WaitForChild("CloseBtn") :: TextButton
             local clonedTitle = clonedMainFrame:WaitForChild("Title") :: TextLabel
             local clonedHideBtn = clonedMainFrame:WaitForChild("HideBtn") :: TextButton
-            local clonedShowBtn = clonedCommandsGui:WaitForChild("ShowBtn") :: TextButton
             
             local HandledUi = UIUtilitiesLibrary(clonedCommandsGui)
             HandledUi:hoverAndToggleSizing(1.15)
@@ -106,15 +106,24 @@ function Constructor:__call()
 
                 HandledUi:handleButtonPress(clonedHideBtn,
                     function(pos1: number, pos2: number)
-                        clonedMainFrame.Visible = false
-                        clonedShowBtn.Visible = true
-                    end
-                )
+                        clonedCommandsGui.Enabled = false
+                        
+                        local clonedCommandsGuiOpener = CommandsGuiOpenerComponents.commandsGuiOpener:Clone()
+                        clonedCommandsGuiOpener.Parent = PlayerGui
 
-                HandledUi:handleButtonPress(clonedShowBtn,
-                    function(pos1: number, pos2: number)
-                        clonedMainFrame.Visible = true
-                        clonedShowBtn.Visible = false
+                        local clonedShowBtn = clonedCommandsGuiOpener:WaitForChild("ShowBtn") :: TextButton
+
+                        local HandledOpenerUi = UIUtilitiesLibrary(clonedCommandsGuiOpener)
+                        HandledOpenerUi:hoverAndToggleSizing(1.15)
+
+                        HandledOpenerUi:handleButtonPress(clonedShowBtn,
+                            function(pos1: number, pos2: number)
+                                HandledOpenerUi:wipeConnections()
+                                clonedCommandsGuiOpener:Destroy()
+                                
+                                clonedCommandsGui.Enabled = true
+                            end
+                        )
                     end
                 )
             end

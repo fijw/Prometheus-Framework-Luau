@@ -326,7 +326,17 @@ end
     @return
 ]]
 function Inheritance:handleButtonPress(button: GuiButton, callback: (pos1: number, pos2: number) -> ())
-    local PressConnection = button.MouseButton1Up:Connect(callback)
+    local originalButtonSize = button.Size
+
+    local PressConnection = button.MouseButton1Up
+    :Connect(
+        function(pos1: number, pos2: number)
+            button.Size = originalButtonSize
+            
+            callback(pos1, pos2)
+        end
+    )
+
     table.insert(self.PressConnections, PressConnection)
 end
 
