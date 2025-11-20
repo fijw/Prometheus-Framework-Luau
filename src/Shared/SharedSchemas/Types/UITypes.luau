@@ -38,7 +38,8 @@ export type HandledUIInheritanceSchema
     : (
         self: HandledUI,
         button: GuiButton,
-        callback: (pos1: number, pos2: number) -> ()
+        callback: (pos1: number, pos2: number) -> (),
+        isClosingButton: UDim2?
     ) -> (),
 
     handleGuiObjectInput

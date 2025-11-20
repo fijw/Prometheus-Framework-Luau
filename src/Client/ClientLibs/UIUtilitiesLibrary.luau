@@ -35,13 +35,17 @@
 
         -- Setting up the UI Utilities.
         do
+            local originalTestButtonSize = testButton.Size
+
             local HandledUi = UIUtilitiesLibrary(TestUi)
             HandledUi:hoverAndToggleSizing(1.15) -- 1.15? idk.
 
             HandledUi:handleButtonPress(testButton,
                 function(pos1: number, pos2: number)
                     print("pressed")
-                end
+                end,
+
+                originalTestButtonSize
             )
 
             HandledUi:handleGuiObjectInput(testButton.MouseEnter,
@@ -114,7 +118,7 @@ local function upscaleInstance(inst: GuiButton, upscaledInstanceSize: UDim2)
 
 
         { Size = upscaledInstanceSize }
-    )
+    ):waitForCompletion()
 end
 
 --[[
@@ -141,7 +145,7 @@ local function downscaleInstance(inst: GuiButton, defaultSize: UDim2)
 
 
         { Size = defaultSize }
-    )
+    ):waitForCompletion()
 end
 --[[ @end_section Utility Functions ]]
 
@@ -302,6 +306,7 @@ end
     @usage Handles GuiObject inputs.
 
     @param self HandledUI
+
     @param action RBXScriptConnection
     @param callback (pos1: number, pos2: number) -> ()
 
@@ -320,21 +325,26 @@ end
     @usage Handles button presses.
 
     @param self HandledUI
+
     @param button GuiButton
     @param callback (pos1: number, pos2: number) -> ()
+    @param isClosingButton true?
 
     @return
 ]]
-function Inheritance:handleButtonPress(button: GuiButton, callback: (pos1: number, pos2: number) -> ())
-    local originalButtonSizeX, originalButtonSizeY = button.Size.X.Scale, button.Size.Y.Scale
-    local originalButtonSize = UDim2.new(originalButtonSizeX, 0, originalButtonSizeY, 0)
-
+function Inheritance:handleButtonPress
+(
+    button: GuiButton,
+    callback: (pos1: number, pos2: number) -> (),
+    isClosingButton: UDim2?
+)
     local PressConnection = button.MouseButton1Up
     :Connect(
         function(pos1: number, pos2: number)
             callback(pos1, pos2)
 
-            button.Size = originalButtonSize
+            if not isClosingButton then return end
+            downscaleInstance(button, isClosingButton)
         end
     )
 
@@ -345,6 +355,7 @@ end
     @usage Makes a GuiObject draggable.
 
     @param self HandledUI
+
     @param guiObject GuiObject
 
     @return

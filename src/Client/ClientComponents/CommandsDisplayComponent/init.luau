@@ -81,6 +81,9 @@ function Constructor:__call()
             local clonedCloseBtn = clonedMainFrame:WaitForChild("CloseBtn") :: TextButton
             local clonedTitle = clonedMainFrame:WaitForChild("Title") :: TextLabel
             local clonedHideBtn = clonedMainFrame:WaitForChild("HideBtn") :: TextButton
+
+            local originalCloseBtnSize = clonedCloseBtn.Size
+            local originalHideBtnSize = clonedHideBtn.Size
             
             local HandledUi = UIUtilitiesLibrary(clonedCommandsGui)
             HandledUi:hoverAndToggleSizing(1.15)
@@ -101,7 +104,9 @@ function Constructor:__call()
                     function(pos1: number, pos2: number)
                         HandledUi:wipeConnections()
                         clonedCommandsGui:Destroy()
-                    end
+                    end,
+
+                    originalCloseBtnSize
                 )
 
                 HandledUi:handleButtonPress(clonedHideBtn,
@@ -112,6 +117,7 @@ function Constructor:__call()
                         clonedCommandsGuiOpener.Parent = PlayerGui
 
                         local clonedShowBtn = clonedCommandsGuiOpener:WaitForChild("ShowBtn") :: TextButton
+                        local originalShowBtnSize = clonedShowBtn.Size
 
                         local HandledOpenerUi = UIUtilitiesLibrary(clonedCommandsGuiOpener)
                         HandledOpenerUi:hoverAndToggleSizing(1.15)
@@ -120,11 +126,15 @@ function Constructor:__call()
                             function(pos1: number, pos2: number)
                                 HandledOpenerUi:wipeConnections()
                                 clonedCommandsGuiOpener:Destroy()
-                                
+
                                 clonedCommandsGui.Enabled = true
-                            end
+                            end,
+
+                            originalShowBtnSize
                         )
-                    end
+                    end,
+
+                    originalHideBtnSize
                 )
             end
 
