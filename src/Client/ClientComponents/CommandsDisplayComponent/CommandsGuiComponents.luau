@@ -14,6 +14,8 @@ local uiListLayout = Instance.new("UIListLayout")
 local closeBtn = Instance.new("TextButton")
 local uiCorner_3 = Instance.new("UICorner")
 local credits = Instance.new("TextLabel")
+local note1 = Instance.new("TextLabel")
+local note2 = Instance.new("TextLabel")
 local uiAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 
 local CommandsGuiComponents
@@ -29,6 +31,8 @@ local CommandsGuiComponents
     uiCorner_2 = uiCorner_2,
     uiCorner_3 = uiCorner_3,
     credits = credits,
+    note1 = note1,
+    note2 = note2,
     uiAspectRatioConstraint = uiAspectRatioConstraint
 }
 --[[ @end_section Variables ]]
@@ -44,10 +48,11 @@ do
     mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
     mainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BorderSizePixel = 0
-    mainFrame.Position = UDim2.new(0.506016791, 0, 0.48070842, 0)
-    mainFrame.Size = UDim2.new(0.112033591, 0, 0.301852733, 0)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    mainFrame.Size = UDim2.new(0.172112212, 0, 0.435944021, 0)
 
     uiCorner.CornerRadius = UDim.new(0, 16)
+    uiCorner.Name = "UICorner"
     uiCorner.Parent = mainFrame
 
     title.Name = "Title"
@@ -56,8 +61,8 @@ do
     title.BackgroundTransparency = 1.000
     title.BorderColor3 = Color3.fromRGB(0, 0, 0)
     title.BorderSizePixel = 0
-    title.Position = UDim2.new(0.0325423218, 0, -9.65961107e-08, 0)
-    title.Size = UDim2.new(0.721119165, 0, 0.152515709, 0)
+    title.Position = UDim2.new(0.0325423107, 0, -6.48780656e-08, 0)
+    title.Size = UDim2.new(0.770487607, 0, 0.128863111, 0)
     title.Font = Enum.Font.SourceSansBold
     title.Text = "Commands List"
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -71,15 +76,12 @@ do
     commandsScroller.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     commandsScroller.BorderColor3 = Color3.fromRGB(0, 0, 0)
     commandsScroller.BorderSizePixel = 0
-    commandsScroller.Position = UDim2.new(0.0325426087, 0, 0.151932523, 0)
-    commandsScroller.Size = UDim2.new(0.932462811, 0, 0.766217887, 0)
+    commandsScroller.Position = UDim2.new(0.0325426832, 0, 0.128862947, 0)
+    commandsScroller.Size = UDim2.new(0.932462811, 0, 0.789287329, 0)
     commandsScroller.CanvasSize = UDim2.new(0, 0, 0, 0)
-    commandsScroller.AutomaticCanvasSize = Enum.AutomaticSize.Y
-
-    uiAspectRatioConstraint.Parent = mainFrame
-    uiAspectRatioConstraint.AspectRatio = 0.66
 
     uiCorner_2.CornerRadius = UDim.new(0, 16)
+    uiCorner_2.Name = "UICorner"
     uiCorner_2.Parent = commandsScroller
 
     templateCommand.Name = "TemplateCommand"
@@ -88,33 +90,67 @@ do
     templateCommand.BackgroundTransparency = 1.000
     templateCommand.BorderColor3 = Color3.fromRGB(0, 0, 0)
     templateCommand.BorderSizePixel = 0
-    templateCommand.Size = UDim2.new(1, 0, 0.125, 0)
+    templateCommand.Size = UDim2.new(0.850000024, 0, 0.125, 0)
+    templateCommand.Visible = false
     templateCommand.Font = Enum.Font.SourceSansBold
     templateCommand.Text = "fly {id}"
-    templateCommand.Visible = false
     templateCommand.TextColor3 = Color3.fromRGB(255, 255, 255)
     templateCommand.TextScaled = true
     templateCommand.TextSize = 14.000
     templateCommand.TextWrapped = true
 
+    uiListLayout.Name = "UIListLayout"
     uiListLayout.Parent = commandsScroller
+    uiListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
+    note1.Name = "Note1"
+    note1.Parent = commandsScroller
+    note1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    note1.BackgroundTransparency = 1.000
+    note1.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    note1.BorderSizePixel = 0
+    note1.LayoutOrder = -2
+    note1.Position = UDim2.new(0.0749999508, 0, -2.54019398e-07, 0)
+    note1.Size = UDim2.new(0.850000024, 0, 0.250000089, 0)
+    note1.Font = Enum.Font.SourceSansBold
+    note1.Text = "You can stack commands together by simply doing: \"{command} {args}; {command} {args}\""
+    note1.TextColor3 = Color3.fromRGB(255, 170, 0)
+    note1.TextScaled = true
+    note1.TextSize = 14.000
+    note1.TextWrapped = true
+
+    note2.Name = "Note2"
+    note2.Parent = commandsScroller
+    note2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    note2.BackgroundTransparency = 1.000
+    note2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    note2.BorderSizePixel = 0
+    note2.LayoutOrder = -1
+    note2.Size = UDim2.new(0.850000024, 0, 0.125, 0)
+    note2.Font = Enum.Font.SourceSansBold
+    note2.Text = "You can  put \"me\" in place of an id to target yourself in an argument."
+    note2.TextColor3 = Color3.fromRGB(255, 170, 0)
+    note2.TextScaled = true
+    note2.TextSize = 14.000
+    note2.TextWrapped = true
+
+    closeBtn.Name = "CloseBtn"
     closeBtn.Parent = mainFrame
     closeBtn.AnchorPoint = Vector2.new(0.5, 0.5)
     closeBtn.BackgroundColor3 = Color3.fromRGB(255, 70, 73)
     closeBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
     closeBtn.BorderSizePixel = 0
-    closeBtn.Position = UDim2.new(0.876999974, 0, 0.0799999982, 0)
-    closeBtn.Size = UDim2.new(0.168625697, 0, 0.115163065, 0)
+    closeBtn.Position = UDim2.new(0.902387261, 0, 0.0639876202, 0)
+    closeBtn.Size = UDim2.new(0.121503152, 0, 0.0829806104, 0)
     closeBtn.Font = Enum.Font.SourceSansBold
     closeBtn.Text = "X"
     closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     closeBtn.TextScaled = true
     closeBtn.TextSize = 14.000
     closeBtn.TextWrapped = true
-    closeBtn.Name = "CloseBtn"
 
+    uiCorner_3.Name = "UICorner"
     uiCorner_3.Parent = closeBtn
 
     credits.Name = "Credits"
@@ -128,7 +164,9 @@ do
     credits.Font = Enum.Font.SourceSansBold
     credits.Text = "Prometheus Framework - by Kairos"
     credits.TextColor3 = Color3.fromRGB(255, 255, 255)
+    credits.TextScaled = true
     credits.TextSize = 14.000
+    credits.TextWrapped = true
 end
 
 

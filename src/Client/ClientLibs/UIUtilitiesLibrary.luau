@@ -184,9 +184,23 @@ local function onInputBegan
     while DraggableData.isHovering and DraggableData.isHolding do
         local xDifference, yDifference = draggingObject.AbsoluteSize.X / 2, draggingObject.AbsoluteSize.Y / 2
         local newXOffset, newYOffset = playerMouse.X - xDifference, playerMouse.Y - yDifference
-        movingObject.Position = UDim2.new(0, newXOffset, 0, newYOffset)
-        
-        task.wait()
+
+        TweensLibrary(
+            movingObject,
+
+
+            0,
+
+            Enum.EasingStyle.Sine,
+            Enum.EasingDirection.Out,
+
+            0,
+            false,
+            0,
+
+
+            { Position = UDim2.new(0, newXOffset, 0, newYOffset) }
+        ):waitForCompletion()
     end
 end
 
