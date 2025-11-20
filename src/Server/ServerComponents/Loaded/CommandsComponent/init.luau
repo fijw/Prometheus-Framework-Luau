@@ -37,37 +37,6 @@
     @NOTE You can also chain commands by simply doing:
     @NOTE "{command} {args?}; {command} {args?}; {command} {args?}"
 
-    @NOTE Current commands are:
-    ```
-        fly {id}
-        unfly {id}
-
-        freeze {id}
-        unfreeze {id}
-
-        invisible {id}
-        visible {id}
-
-        teleport {id} {id}
-        bring {id}
-        goto {id}
-        
-        gotoserver {id}
-        bringtoserver {id}
-        gotoreserved
-
-        wipedata {id} {reason}
-        kick {id} {reason}
-        ban {id} {reason}
-        unban {id} {reason}
-
-        globalchat {message}
-
-        wait {seconds}
-
-        help
-    ```
-
     @COMMAND_NOTE The gotoserver command will not work with reserved servers, however the
     @COMMAND_NOTE bringtoserver command will work with reserved servers.
 
@@ -132,10 +101,13 @@ local CommandsMap
     [string]
     : {
         func: (...any) -> (...any),
-        argAmt: number,
+        funcArgsAmt: number,
+
+        commandArgsTag: string?,
 
         inputAndArgParams: true?,
         playerAndInputNumParams: true?,
+        playerAndMapParams: true?,
 
         argsParamOnly: true?,
         inputNumParamOnly: true?,
@@ -143,37 +115,41 @@ local CommandsMap
     }
 }
 = {
-    wipedata = { func = WipeData, argAmt = 3 },
-    kick = { func = KickPlayer, argAmt = 3 },
-    ban = { func = BanPlayer, argAmt = 3 },
-    unban = { func = UnbanPlayer, argAmt = 3 },
+    wipedata = { func = WipeData, funcArgsAmt = 3, commandArgsTag = "{id} {reason}" },
+
+    kick = { func = KickPlayer, funcArgsAmt = 3, commandArgsTag = "{id} {reason}" },
+
+    ban = { func = BanPlayer, funcArgsAmt = 3, commandArgsTag = "{id} {reason}" },
+    unban = { func = UnbanPlayer, funcArgsAmt = 3, commandArgsTag = "{id} {reason}" },
 
 
-    bringtoserver = { func = BringPlayerToServer, argAmt = 3 },
-    gotoserver = { func = GotoPlayerServer, argAmt = 2, playerAndInputNumParams = true },
-    gotoreserved = { func = GotoReservedServer, argAmt = 1, playerParamOnly = true },
+    bringtoserver = { func = BringPlayerToServer, funcArgsAmt = 2, commandArgsTag = "{id}", playerAndInputNumParams = true },
+    gotoserver = { func = GotoPlayerServer, funcArgsAmt = 2, commandArgsTag = "{id}", playerAndInputNumParams = true },
+
+    gotoreserved = { func = GotoReservedServer, funcArgsAmt = 1, playerParamOnly = true },
 
 
-    fly = { func = FlyPlayer, argAmt = 1, inputNumParamOnly = true },
-    unfly = { func = UnflyPlayer, argAmt = 1, inputNumParamOnly = true },
+    fly = { func = FlyPlayer, funcArgsAmt = 1, commandArgsTag = "{id}", inputNumParamOnly = true },
+    unfly = { func = UnflyPlayer, funcArgsAmt = 1, commandArgsTag = "{id}", inputNumParamOnly = true },
 
-    freeze = { func = FreezePlayer, argAmt = 1, inputNumParamOnly = true },
-    unfreeze = { func = UnfreezePlayer, argAmt = 1, inputNumParamOnly = true },
+    freeze = { func = FreezePlayer, funcArgsAmt = 1, commandArgsTag = "{id}", inputNumParamOnly = true },
+    unfreeze = { func = UnfreezePlayer, funcArgsAmt = 1, commandArgsTag = "{id}", inputNumParamOnly = true },
 
-    invisible = { func = InvisiblePlayer, argAmt = 1, inputNumParamOnly = true },
-    visible = { func = VisiblePlayer, argAmt = 1, inputNumParamOnly = true },
-
-
-    teleport = { func = TeleportPlayerToPlayer, argAmt = 3 },
-    bring = { func = BringPlayer, argAmt = 2, playerAndInputNumParams = true },
-    goto = { func = GotoPlayer, argAmt = 2, playerAndInputNumParams = true },
+    invisible = { func = InvisiblePlayer, funcArgsAmt = 1, commandArgsTag = "{id}", inputNumParamOnly = true },
+    visible = { func = VisiblePlayer, funcArgsAmt = 1, commandArgsTag = "{id}", inputNumParamOnly = true },
 
 
-    help = { func = Help, argAmt = 1, playerParamOnly = true },
+    teleport = { func = TeleportPlayerToPlayer, funcArgsAmt = 3, commandArgsTag = "{brought id} {bringer id}", inputAndArgParams = true },
 
-    wait = { func = task.wait, argAmt = 1, inputNumParamOnly = true },
+    bring = { func = BringPlayer, funcArgsAmt = 2, commandArgsTag = "{id}", playerAndInputNumParams = true },
+    goto = { func = GotoPlayer, funcArgsAmt = 2, commandArgsTag = "{id}", playerAndInputNumParams = true },
 
-    globalchat = { func = GlobalChat, argAmt = 1, argsParamOnly = true },
+
+    help = { func = Help, funcArgsAmt = 2, playerAndMapParams = true },
+    globalchat = { func = GlobalChat, funcArgsAmt = 1, commandArgsTag = "{message}", argsParamOnly = true },
+
+    
+    wait = { func = task.wait, funcArgsAmt = 1, commandArgsTag = "{time in seconds}", inputNumParamOnly = true }
 }
 
 
@@ -227,14 +203,15 @@ function Constructor:__call()
                 local CommandData = CommandsMap[cmd]
                 if not CommandData then continue end
 
-                if CommandData.argAmt == 3 then CommandData.func(player, inputNum, args)
+                if CommandData.funcArgsAmt == 3 then CommandData.func(player, inputNum, args)
 
-                elseif CommandData.argAmt == 2 and CommandData.inputAndArgParams then CommandData.func(inputNum, args)
-                elseif CommandData.argAmt == 2 and CommandData.playerAndInputNumParams then CommandData.func(player, inputNum)
+                elseif CommandData.funcArgsAmt == 2 and CommandData.inputAndArgParams then CommandData.func(inputNum, args)
+                elseif CommandData.funcArgsAmt == 2 and CommandData.playerAndInputNumParams then CommandData.func(player, inputNum)
+                elseif CommandData.funcArgsAmt == 2 and CommandData.playerAndMapParams then CommandData.func(player, CommandsMap)
 
-                elseif CommandData.argAmt == 1 and CommandData.argsParamOnly then CommandData.func(args)
-                elseif CommandData.argAmt == 1 and CommandData.inputNumParamOnly then CommandData.func(inputNum)
-                elseif CommandData.argAmt == 1 and CommandData.playerParamOnly then CommandData.func(player) end
+                elseif CommandData.funcArgsAmt == 1 and CommandData.argsParamOnly then CommandData.func(args)
+                elseif CommandData.funcArgsAmt == 1 and CommandData.inputNumParamOnly then CommandData.func(inputNum)
+                elseif CommandData.funcArgsAmt == 1 and CommandData.playerParamOnly then CommandData.func(player) end
 
                 if i == 1 then cmdArgIndex += 1; inputIdIndex += 1 end
             end

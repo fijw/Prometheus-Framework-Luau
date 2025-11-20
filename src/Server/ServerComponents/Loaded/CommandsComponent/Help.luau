@@ -17,41 +17,15 @@ local ChatCommandsNamespace = require(ReplicatedStorage.Networking.Namespaces.Se
     
     @return
 ]]
-local function moduleFunction(player: Player)
-    ChatCommandsNamespace.packets.ClientDisplayHelpListChat
-    .sendTo(
-        {
-            "fly {id}",
-            "unfly {id}",
+local function moduleFunction(player: Player, CommandsListArray: { [string]: any })
+    local CommandsList = {}
 
-            "freeze {id}",
-            "unfreeze {id}",
+    for i: string, v: any in CommandsListArray do
+        local commandEntry = `{i}{if v.commandArgsTag then " "..v.commandArgsTag :: string else ""}`
+        table.insert(CommandsList, commandEntry)
+    end
 
-            "invisible {id}",
-            "visible {id}",
-
-            "teleport {id} {id}",
-            "bring {id}",
-            "goto {id}",
-
-            "gotoserver {id}",
-            "bringtoserver {id}",
-            "gotoreserved",
-
-            "wipedata {id}",
-            "unban {id}",
-            "ban {id} {reason}",
-            "kick {id} {reason}",
-
-            "globalchat {message}",
-
-            "wait {seconds}",
-
-            "help",
-        },
-        
-        player
-    )
+    ChatCommandsNamespace.packets.ClientDisplayHelpListChat.sendTo(CommandsList, player)
 end
 
 return moduleFunction

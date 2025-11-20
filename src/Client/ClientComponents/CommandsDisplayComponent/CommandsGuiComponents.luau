@@ -44,11 +44,10 @@ do
 
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = commandsGui
-    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
     mainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
     mainFrame.BorderSizePixel = 0
-    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    mainFrame.Position = UDim2.new(0.414, 0, 0.281, 0)
     mainFrame.Size = UDim2.new(0.172112212, 0, 0.435944021, 0)
 
     uiCorner.CornerRadius = UDim.new(0, 16)

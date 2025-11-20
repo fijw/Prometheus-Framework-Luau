@@ -26,11 +26,10 @@ local PRIVATE_SERVER_ID = game.PrivateServerId
 
     @param player Player
     @param id number
-    @param args { any }
     
     @return
 ]]
-local function moduleFunction(player: Player, id: number, args: { any })
+local function moduleFunction(player: Player, id: number)
     local foundPlayer = Players:GetPlayerByUserId(id)
     if foundPlayer then return end
 
